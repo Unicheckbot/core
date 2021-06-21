@@ -64,8 +64,8 @@ class ICMPCheckerResponse(BaseModel):
     loss: float
 
     def __str__(self):
-        return f"{Emoji.OK} {self.min_rtt}/{self.max_rtt}/{self.avg_rtt}" \
-               f"{Emoji.ARROW_UP}{self.packets_sent} ️{Emoji.ARROW_DOWN}️{self.packets_received}" \
+        return f"{Emoji.OK} {self.min_rtt}/{self.max_rtt}/{self.avg_rtt} " \
+               f"{Emoji.ARROW_UP}{self.packets_sent} ️{Emoji.ARROW_DOWN}️{self.packets_received} ." \
                f"Loss: {self.loss}"
 
 
@@ -106,9 +106,8 @@ HTTP_EMOJI = {
 }
 
 COUNTRY_EMOJI = {
-    "Russia": "🇷🇺",
-    "Ukraine": "🇺🇦",
-    "Luxembourg": "🇱🇺",
-    "France": "🇫🇷",
-
+    "russia": "🇷🇺",
+    "ukraine": "🇺🇦",
+    "luxembourg": "🇱🇺",
+    "france": "🇫🇷",
 }
