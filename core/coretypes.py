@@ -1,10 +1,11 @@
 from enum import Enum, IntEnum
-from typing import TypeVar, Generic, List
+from typing import TypeVar, Generic, List, Optional
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from pydantic.generics import GenericModel
 
 Payload = TypeVar('Payload')
+Details = TypeVar('Details')
 
 
 class ResponseStatus(str, Enum):
@@ -25,6 +26,9 @@ class Emoji(str, Enum):
     PEOPLE = "👤"
     LATENCY = "📶"
     TIME = "⏰"
+    COMPUTER = "🖥"
+    TRAFFIC_LIGHTS = "🚦"
+    SHRUG = "🤷‍♂️"
 
     def __str__(self):
         return self.value
@@ -54,18 +58,26 @@ class HttpCheckerResponse(BaseModel):
 
 
 class ICMPCheckerResponse(BaseModel):
-    jitter: float
-    rtts: List[float]
     min_rtt: float
     avg_rtt: float
     max_rtt: float
     packets_sent: int
     packets_received: int
-    loss: float
 
     def __str__(self):
         return f"{Emoji.OK} {self.min_rtt}/{self.max_rtt}/{self.avg_rtt} " \
                f"{Emoji.ARROW_UP}{self.packets_sent} ️{Emoji.ARROW_DOWN}️{self.packets_received} ." \
+
+
+
+class ICMPDetails(BaseModel):
+    jitter: float
+    rtts: List[float]
+    loss: float
+
+    def __str__(self):
+        return f"{Emoji.LATENCY} Round-trip time: {','.join(map(str, self.rtts))}\n" \
+               f"{Emoji.LATENCY} Jitter: {self.jitter}\n" \
                f"Loss: {self.loss}"
 
 
@@ -73,24 +85,44 @@ class MinecraftResponse(BaseModel):
     latency: float
     max_players: int
     online: int
-    version: str
-    protocol: int
 
     def __str__(self):
         return f"{Emoji.OK} {Emoji.PEOPLE}{self.online}/{self.max_players} {Emoji.LATENCY}{self.latency}ms"
 
 
+class MinecraftDetails(BaseModel):
+    version: str
+    protocol: int
+    port: Optional[int]
+
+    def __str__(self):
+        message = f"{Emoji.COMPUTER} Версия: {self.version}\n" \
+                  f"{Emoji.TRAFFIC_LIGHTS} Протокол: {self.protocol}\n"
+        if self.port:
+            message += f"{Emoji.OK} Порт: {self.port}"
+
+
 class PortResponse(BaseModel):
     open: bool
+
+    def __str__(self):
+        return f"{Emoji.OK if self.open else Emoji.ERR}"
+
+
+class PortDetails(BaseModel):
     service: str
 
     def __str__(self):
-        return f"{Emoji.OK if self.open else Emoji.ERR} | {self.service}"
+        if self.service != "Неизвестно":
+            return f"{Emoji.PHONE} Скорее всего на этом порту располагается сервис {self.service}"
+        else:
+            return f"{Emoji.SHRUG} На этом порту неизвестный сервис"
 
 
 class Response(GenericModel, Generic[Payload]):
     status: ResponseStatus
     payload: Payload
+    details: Optional[Details] = Field(default=None)
 
 
 class APINode(BaseModel):
