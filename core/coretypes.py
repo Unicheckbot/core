@@ -76,9 +76,10 @@ class ICMPDetails(BaseModel):
     loss: float
 
     def __str__(self):
-        return f"{Emoji.LATENCY} Round-trip time: {','.join(map(str, self.rtts))}\n" \
+        rtts = str.join(" \n", map(str, self.rtts))
+        return f"{Emoji.LATENCY} Round-trip time: \n{rtts}\n" \
                f"{Emoji.LATENCY} Jitter: {self.jitter}\n" \
-               f"Loss: {self.loss}"
+               f"{Emoji.LATENCY} Loss: {self.loss}"
 
 
 class MinecraftResponse(BaseModel):
@@ -96,7 +97,7 @@ class MinecraftDetails(BaseModel):
     port: Optional[int]
 
     def __str__(self):
-        message = f"{Emoji.COMPUTER} Версия: {self.version}\n" \
+        message = f"{Emoji.COMPUTER} Версия ядра: {self.version}\n" \
                   f"{Emoji.TRAFFIC_LIGHTS} Протокол: {self.protocol}\n" \
                   f"{Emoji.PEOPLE} Онлаин: {self.online}/{self.max_players}"
         if self.port:
