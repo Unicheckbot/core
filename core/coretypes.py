@@ -100,7 +100,7 @@ class MinecraftDetails(BaseModel):
                   f"{Emoji.TRAFFIC_LIGHTS} Протокол: {self.protocol}\n" \
                   f"{Emoji.PEOPLE} Онлаин: {self.online}/{self.max_players}"
         if self.port:
-            message += f"{Emoji.OK} Порт: {self.port}"
+            message += f"\n{Emoji.OK} Порт: {self.port}"
         return message
 
 
