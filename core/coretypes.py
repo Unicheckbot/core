@@ -12,6 +12,24 @@ class ResponseStatus(str, Enum):
     ERROR = "error"
 
 
+class Emoji(str, Enum):
+
+    OK = "✅"
+    ERR = "❌"
+    ARROW_UP = "⬆"
+    ARROW_DOWN = "⬇️"
+    PIN = "📌"
+    PHONE = "📱"
+    TRIANGE_UP = "🔼"
+    TRIANGE_DOWN = "🔽"
+    PEOPLE = "👤"
+    LATENCY = "📶"
+    TIME = "⏰"
+
+    def __str__(self):
+        return self.value
+
+
 class ErrorCodes(IntEnum):
     ConnectError = 1
     ICMPHostNotAlive = 2
@@ -22,10 +40,17 @@ class Error(BaseModel):
     message: str
     code: ErrorCodes
 
+    def __str__(self):
+        return f"{Emoji.ERR} {self.message}"
+
 
 class HttpCheckerResponse(BaseModel):
     status_code: int
     time: float
+
+    def __str__(self):
+        return f"{HTTP_EMOJI.get(self.status_code // 100, '')} " \
+               f"{self.status_code}, {Emoji.TIME} {self.time * 1000:.2f}ms"
 
 
 class ICMPCheckerResponse(BaseModel):
@@ -38,6 +63,11 @@ class ICMPCheckerResponse(BaseModel):
     packets_received: int
     loss: float
 
+    def __str__(self):
+        return f"{Emoji.OK} {self.min_rtt}/{self.max_rtt}/{self.avg_rtt}" \
+               f"{Emoji.ARROW_UP}{self.packets_sent} ️{Emoji.ARROW_DOWN}️{self.packets_received}" \
+               f"Loss: {self.loss}"
+
 
 class MinecraftResponse(BaseModel):
     latency: float
@@ -46,10 +76,16 @@ class MinecraftResponse(BaseModel):
     version: str
     protocol: int
 
+    def __str__(self):
+        return f"{Emoji.OK} {Emoji.PEOPLE}{self.online}/{self.max_players} {Emoji.LATENCY}{self.latency}ms"
+
 
 class PortResponse(BaseModel):
     open: bool
     service: str
+
+    def __str__(self):
+        return f"{Emoji.OK if self.open else Emoji.ERR} | {self.service}"
 
 
 class Response(GenericModel, Generic[Payload]):
@@ -67,4 +103,12 @@ HTTP_EMOJI = {
     3: "➡️",
     4: "🔍",
     5: "❌️",
+}
+
+COUNTRY_EMOJI = {
+    "Russia": "🇷🇺",
+    "Ukraine": "🇺🇦",
+    "Luxembourg": "🇱🇺",
+    "France": "🇫🇷",
+
 }
