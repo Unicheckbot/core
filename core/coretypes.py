@@ -33,6 +33,7 @@ class Emoji(str, Enum):
     SHIELD = "🛡"
     KEY = "🔑"
     MAP = "🗺"
+    GAME = "🎮"
 
     def __str__(self):
         return self.value
@@ -148,13 +149,15 @@ class SourceServerDetails(BaseModel):
     password_protected: bool
     vac_enabled: bool
     version: str
+    game: str
     steam_id: Optional[int]
     game_id: Optional[int]
     players: List[SourceServerPlayer]
     rules: Optional[Dict]
 
     def __str__(self):
-        return f"{Emoji.OK} {self.server_name}\n\n" \
+        return f"{Emoji.OK} {self.server_name}\n" \
+               f"{Emoji.GAME} Игра: {self.game}\n\n" \
                f"{Emoji.MAP} Карта: {self.map_name}\n" \
                f"{Emoji.PEOPLE} Игроки: {self.player_count}/{self.max_players}\n" \
                f"{Emoji.COMPUTER} Версия: {self.version}\n" \
