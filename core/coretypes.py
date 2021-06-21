@@ -29,6 +29,10 @@ class Emoji(str, Enum):
     COMPUTER = "🖥"
     TRAFFIC_LIGHTS = "🚦"
     SHRUG = "🤷‍♂️"
+    INFO = "ℹ️"
+    SHIELD = "🛡"
+    KEY = "🔑"
+    MAP = "🗺"
 
     def __str__(self):
         return self.value
@@ -150,14 +154,14 @@ class SourceServerDetails(BaseModel):
     rules: Optional[Dict]
 
     def __str__(self):
-        return f"{self.server_name}\n\n" \
-               f"Карта: {self.map_name}\n" \
-               f"Игроки: {self.player_count}/{self.max_players}\n" \
-               f"Версия: {self.version}\n" \
-               f"{'Сервер защищен VAC' if self.vac_enabled else 'Сервер без VAC'}\n" \
-               f"{'Сервер защищен паролем' if self.vac_enabled else 'Сервер без пароля'}\n\n" \
-               f"STEAM ID: {self.steam_id}\n" \
-               f"GAME ID: {self.game_id}\n" \
+        return f"{Emoji.OK} {self.server_name}\n\n" \
+               f"{Emoji.MAP} Карта: {self.map_name}\n" \
+               f"{Emoji.PEOPLE} Игроки: {self.player_count}/{self.max_players}\n" \
+               f"{Emoji.COMPUTER} Версия: {self.version}\n" \
+               f"{Emoji.SHIELD} {'Сервер защищен VAC' if self.vac_enabled else 'Сервер без VAC'}\n" \
+               f"{Emoji.KEY} {'Сервер защищен паролем' if self.vac_enabled else 'Сервер без пароля'}\n\n" \
+               f"{Emoji.INFO} STEAM ID: {self.steam_id}\n" \
+               f"{Emoji.INFO}️ GAME ID: {self.game_id}\n" \
 
 
 
