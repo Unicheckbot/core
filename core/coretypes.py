@@ -66,7 +66,7 @@ class ICMPCheckerResponse(BaseModel):
 
     def __str__(self):
         return f"{Emoji.OK} {self.min_rtt}/{self.max_rtt}/{self.avg_rtt} " \
-               f"{Emoji.ARROW_UP}{self.packets_sent} ️{Emoji.ARROW_DOWN}️{self.packets_received} ." \
+               f"{Emoji.ARROW_UP}{self.packets_sent} ️{Emoji.ARROW_DOWN}️{self.packets_received}" \
 
 
 
@@ -83,21 +83,22 @@ class ICMPDetails(BaseModel):
 
 class MinecraftResponse(BaseModel):
     latency: float
-    max_players: int
-    online: int
 
     def __str__(self):
-        return f"{Emoji.OK} {Emoji.PEOPLE}{self.online}/{self.max_players} {Emoji.LATENCY}{self.latency}ms"
+        return f"{Emoji.OK} {Emoji.LATENCY}{self.latency}ms"
 
 
 class MinecraftDetails(BaseModel):
     version: str
     protocol: int
+    max_players: int
+    online: int
     port: Optional[int]
 
     def __str__(self):
         message = f"{Emoji.COMPUTER} Версия: {self.version}\n" \
-                  f"{Emoji.TRAFFIC_LIGHTS} Протокол: {self.protocol}\n"
+                  f"{Emoji.TRAFFIC_LIGHTS} Протокол: {self.protocol}\n" \
+                  f"{Emoji.PEOPLE} Онлаин: {self.online}/{self.max_players}"
         if self.port:
             message += f"{Emoji.OK} Порт: {self.port}"
 
