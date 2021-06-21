@@ -1,9 +1,10 @@
-from dataclasses import dataclass
 from enum import Enum, IntEnum
+from typing import TypeVar, Generic, List
 
+from pydantic import BaseModel
+from pydantic.generics import GenericModel
 
-class Payload:
-    pass
+Payload = TypeVar('Payload')
 
 
 class ResponseStatus(str, Enum):
@@ -17,20 +18,19 @@ class ErrorCodes(IntEnum):
     InvalidHostname = 3
 
 
-@dataclass
-class ErrorPayload(Payload):
+class Error(BaseModel):
     message: str
     code: ErrorCodes
 
 
-@dataclass
-class HttpCheckerResponse(Payload):
+class HttpCheckerResponse(BaseModel):
     status_code: int
     time: float
 
 
-@dataclass
-class ICMPCheckerResponse(Payload):
+class ICMPCheckerResponse(BaseModel):
+    jitter: float
+    rtts: List[float]
     min_rtt: float
     avg_rtt: float
     max_rtt: float
@@ -39,33 +39,25 @@ class ICMPCheckerResponse(Payload):
     loss: float
 
 
-@dataclass
-class APINodeInfo:
-    name: str
-    location: str
-
-
-@dataclass
-class MinecraftResponse(Payload):
+class MinecraftResponse(BaseModel):
     latency: float
     max_players: int
     online: int
+    version: str
+    protocol: int
 
 
-@dataclass
-class PortResponse(Payload):
+class PortResponse(BaseModel):
     open: bool
+    service: str
 
 
-@dataclass
-class Response:
+class Response(GenericModel, Generic[Payload]):
     status: ResponseStatus
     payload: Payload
-    node: APINodeInfo
 
 
-@dataclass
-class APINode:
+class APINode(BaseModel):
     address: str
     token: str
 
