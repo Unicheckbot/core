@@ -1,5 +1,5 @@
 from enum import Enum, IntEnum
-from typing import TypeVar, Generic, List, Optional
+from typing import TypeVar, Generic, List, Optional, Dict
 
 from pydantic import BaseModel, Field
 from pydantic.generics import GenericModel
@@ -120,6 +120,45 @@ class PortDetails(BaseModel):
             return f"{Emoji.PHONE} Скорее всего на этом порту располагается сервис {self.service}"
         else:
             return f"{Emoji.SHRUG} На этом порту неизвестный сервис"
+
+
+class SourceServerResponse(BaseModel):
+    ping: float
+
+    def __str__(self):
+        return f"{Emoji.OK} {Emoji.LATENCY} {round(self.ping * 1000)}ms"
+
+
+class SourceServerPlayer(BaseModel):
+    name: str
+    score: int
+    duration: float
+
+
+class SourceServerDetails(BaseModel):
+    protocol: int
+    server_name: str
+    map_name: str
+    player_count: int
+    max_players: int
+    password_protected: bool
+    vac_enabled: bool
+    version: str
+    steam_id: Optional[int]
+    game_id: Optional[int]
+    players: List[SourceServerPlayer]
+    rules: Optional[Dict]
+
+    def __str__(self):
+        return f"{self.server_name}\n\n" \
+               f"Карта: {self.map_name}\n" \
+               f"Игроки: {self.player_count}/{self.max_players}\n" \
+               f"Версия: {self.version}\n" \
+               f"{'Сервер защищен VAC' if self.vac_enabled else 'Сервер без VAC'}\n" \
+               f"{'Сервер защищен паролем' if self.vac_enabled else 'Сервер без пароля'}\n\n" \
+               f"STEAM ID: {self.steam_id}\n" \
+               f"GAME ID: {self.game_id}\n" \
+
 
 
 class Response(GenericModel, Generic[Payload]):
