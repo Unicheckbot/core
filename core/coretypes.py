@@ -1,3 +1,4 @@
+import html
 from enum import Enum, IntEnum
 from typing import TypeVar, Generic, List, Optional, Dict
 
@@ -151,18 +152,17 @@ class SourceServerDetails(BaseModel):
     version: str
     game: str
     steam_id: Optional[int]
-    game_id: Optional[int]
     players: List[SourceServerPlayer]
     rules: Optional[Dict]
 
     def __str__(self):
-        return f"{Emoji.OK} {self.server_name}\n" \
-               f"{Emoji.GAME} Игра: {self.game}\n\n" \
+        return f"{Emoji.OK} <b>{html.escape(self.server_name)}</b>\n" \
+               f"{Emoji.GAME} Игра: {self.game}\n" \
                f"{Emoji.MAP} Карта: {self.map_name}\n" \
                f"{Emoji.PEOPLE} Игроки: {self.player_count}/{self.max_players}\n" \
                f"{Emoji.COMPUTER} Версия: {self.version}\n" \
                f"{Emoji.SHIELD} {'Сервер защищен VAC' if self.vac_enabled else 'Сервер без VAC'}\n" \
-               f"{Emoji.KEY} {'Сервер защищен паролем' if self.vac_enabled else 'Сервер без пароля'}\n\n" \
+               f"{Emoji.KEY} {'Сервер защищен паролем' if self.vac_enabled else 'Сервер без пароля'}\n" \
                f"{Emoji.INFO} STEAM ID: {self.steam_id}\n" \
                f"{Emoji.INFO}️ GAME ID: {self.game_id}\n" \
 
