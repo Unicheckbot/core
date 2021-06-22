@@ -164,7 +164,6 @@ class SourceServerDetails(BaseModel):
                f"{Emoji.SHIELD} {'Сервер защищен VAC' if self.vac_enabled else 'Сервер без VAC'}\n" \
                f"{Emoji.KEY} {'Сервер защищен паролем' if self.vac_enabled else 'Сервер без пароля'}\n" \
                f"{Emoji.INFO} STEAM ID: {self.steam_id}\n" \
-               f"{Emoji.INFO}️ GAME ID: {self.game_id}\n" \
 
 
 
