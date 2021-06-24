@@ -173,11 +173,6 @@ class Response(GenericModel, Generic[Payload]):
     details: Optional[Details] = Field(default=None)
 
 
-class APINode(BaseModel):
-    address: str
-    token: str
-
-
 HTTP_EMOJI = {
     2: "✅",
     3: "➡️",
@@ -190,4 +185,10 @@ COUNTRY_EMOJI = {
     "ukraine": "🇺🇦",
     "luxembourg": "🇱🇺",
     "france": "🇫🇷",
+    "canada": "🇨🇦",
+    "usa": "🇺🇸",
+    "germany": "🇩🇪",
+    "netherlands": "🇳🇱",
+    "finland": "🇫🇮",
+
 }
