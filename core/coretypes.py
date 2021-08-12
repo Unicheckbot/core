@@ -190,5 +190,10 @@ COUNTRY_EMOJI = {
     "germany": "🇩🇪",
     "netherlands": "🇳🇱",
     "finland": "🇫🇮",
+    "england": "🏴󠁧󠁢󠁥󠁮󠁧󠁿",
+    "switzerland": "🇨🇭",
+    "india": "🇮🇳",
+    "australia": "🇦🇺",
+    "saudi arabia": "🇸🇦",
 
 }
