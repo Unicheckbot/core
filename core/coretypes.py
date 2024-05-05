@@ -166,6 +166,28 @@ class SourceServerDetails(BaseModel):
                f"{Emoji.INFO} STEAM ID: {self.steam_id}\n" \
 
 
+# SPT Aki
+
+
+class SPTConfig(BaseModel):
+    backend_url: str = Field(alias="backendUrl")
+    name: str
+    editions: list[str]
+
+
+class SPTMod(BaseModel):
+    name: str
+    version: str
+    author: str
+    license: str
+
+
+class SPTServerResponse(BaseModel):
+    aki_version: str
+    game_version: str
+    config: SPTConfig
+    mods: list[SPTMod]
+
 
 class Response(GenericModel, Generic[Payload]):
     status: ResponseStatus
