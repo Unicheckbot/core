@@ -241,4 +241,5 @@ COUNTRY_EMOJI = {
     "saudi arabia": "🇸🇦",
     "georgia": "🇬🇪",
     "lithuania": "🇱🇹",
+    "sweden": "🇸🇪",
 }
