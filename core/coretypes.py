@@ -189,6 +189,28 @@ class SPTServerResponse(BaseModel):
     mods: list[SPTMod]
 
 
+class VSMod(BaseModel):
+    id: str
+    version: str
+
+
+class VSPlayStyle(BaseModel):
+    id: str
+    lang_code: str = Field(alias="langCode")
+
+
+class VSServer(BaseModel):
+    server_name: str = Field(alias="serverName")
+    server_ip: str = Field(alias="serverIP")
+    mods: list[VSMod]
+    max_players: int = Field(alias="maxPlayers")
+    players: int
+    game_version: str = Field(alias="gameVersion")
+    has_password: bool = Field(alias="hasPassword")
+    whitelisted: str = Field(alias="whitelisted")
+    game_description: str = Field(alias="gameDescription")
+
+
 class Response(GenericModel, Generic[Payload]):
     status: ResponseStatus
     payload: Payload
