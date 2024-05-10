@@ -1,12 +1,12 @@
 [tool.poetry]
 name = "core"
-version = "0.40.0"
+version = "1.0.0"
 description = ""
 authors = ["kiriharu <kiriharu@yandex.ru>"]
 
 [tool.poetry.dependencies]
 python = "^3.9"
-pydantic = "^1.8.2"
+pydantic = "^2.7.1"
 
 [tool.poetry.dev-dependencies]
 

@@ -3,7 +3,6 @@ from enum import Enum, IntEnum
 from typing import TypeVar, Generic, List, Optional, Dict
 
 from pydantic import BaseModel, Field
-from pydantic.generics import GenericModel
 
 Payload = TypeVar('Payload')
 Details = TypeVar('Details')
@@ -211,7 +210,7 @@ class VSServer(BaseModel):
     game_description: str = Field(alias="gameDescription")
 
 
-class Response(GenericModel, Generic[Payload]):
+class Response(BaseModel, Generic[Payload]):
     status: ResponseStatus
     payload: Payload
     details: Optional[Details] = Field(default=None)
