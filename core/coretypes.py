@@ -276,7 +276,7 @@ class SPTDetails(ToI18nParamsModel):
     mods: list[SPTMod]
 
     def get_formatted_mods(self) -> str:
-        return "\n".join(str(self.mods))
+        return "\n".join(map(str, self.mods))
 
     def __str__(self):
         return (
