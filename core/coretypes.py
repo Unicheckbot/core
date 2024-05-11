@@ -285,7 +285,7 @@ class SPTDetails(ToI18nParamsModel):
             f"{Emoji.GAME} Версия игры: {self.game_version}\n\n"
             
             f"{Emoji.INFO} Моды:\n"
-            f"{self.get_formatted_mods}"
+            f"{self.get_formatted_mods()}"
         )
 
     def get_i18n_params(self) -> dict[str, Any]:
@@ -293,7 +293,7 @@ class SPTDetails(ToI18nParamsModel):
             "name": self.config.name,
             "aki_version": self.aki_version,
             "game_version": self.game_version,
-            "formatted_mods": self.get_formatted_mods
+            "formatted_mods": self.get_formatted_mods()
         }
 
 # Vintage Story
