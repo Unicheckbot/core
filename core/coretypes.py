@@ -1,6 +1,6 @@
 import html
 from enum import Enum, IntEnum
-from typing import TypeVar, Generic, List, Optional, Dict
+from typing import TypeVar, Generic, List, Optional, Dict, Any
 
 from pydantic import BaseModel, Field
 
@@ -14,10 +14,9 @@ class ResponseStatus(str, Enum):
 
 
 class Emoji(str, Enum):
-
     OK = "✅"
     ERR = "❌"
-    ARROW_UP = "⬆"
+    ARROW_UP = "⬆️"
     ARROW_DOWN = "⬇️"
     PIN = "📌"
     PHONE = "📱"
@@ -53,7 +52,13 @@ class Error(BaseModel):
         return f"{Emoji.ERR} {self.message}"
 
 
-class HttpCheckerResponse(BaseModel):
+class ToI18nParamsModel(BaseModel):
+
+    def get_i18n_params(self) -> dict[str, Any]:
+        raise NotImplementedError
+
+
+class HttpCheckerResponse(ToI18nParamsModel):
     status_code: int
     time: float
 
@@ -61,8 +66,15 @@ class HttpCheckerResponse(BaseModel):
         return f"{HTTP_EMOJI.get(self.status_code // 100, '')} " \
                f"{self.status_code}, {Emoji.TIME} {self.time * 1000:.2f}ms"
 
+    def get_i18n_params(self):
+        return {
+            "status_emoji": HTTP_EMOJI.get(self.status_code // 100, ''),
+            "status_code": self.status_code,
+            "time": f"{self.time * 1000:.2f}"
+        }
 
-class ICMPCheckerResponse(BaseModel):
+
+class ICMPCheckerResponse(ToI18nParamsModel):
     min_rtt: float
     avg_rtt: float
     max_rtt: float
@@ -71,30 +83,53 @@ class ICMPCheckerResponse(BaseModel):
 
     def __str__(self):
         return f"{Emoji.OK} {self.min_rtt}/{self.max_rtt}/{self.avg_rtt} " \
-               f"{Emoji.ARROW_UP}{self.packets_sent} ️{Emoji.ARROW_DOWN}️{self.packets_received}" \
+               f"{Emoji.ARROW_UP}{self.packets_sent} ️{Emoji.ARROW_DOWN}{self.packets_received}"
+
+    def get_i18n_params(self) -> dict[str, Any]:
+        return {
+            "min_rtt": self.min_rtt,
+            "max_rtt": self.max_rtt,
+            "avg_rtt": self.avg_rtt,
+            "packets_sent": self.packets_sent,
+            "packets_received": self.packets_received
+        }
 
 
-
-class ICMPDetails(BaseModel):
+class ICMPDetails(ToI18nParamsModel):
     jitter: float
     rtts: List[float]
     loss: float
 
+    def get_rtts(self) -> str:
+        return str.join(" \n", map(str, self.rtts))
+
     def __str__(self):
-        rtts = str.join(" \n", map(str, self.rtts))
+        rtts = self.get_rtts()
         return f"{Emoji.LATENCY} Round-trip time: \n{rtts}\n" \
                f"{Emoji.LATENCY} Jitter: {self.jitter}\n" \
                f"{Emoji.LATENCY} Loss: {self.loss}"
 
+    def get_i18n_params(self) -> dict[str, Any]:
+        return {
+            "rtts": self.get_rtts(),
+            "jitter": self.jitter,
+            "loss": self.loss
+        }
 
-class MinecraftResponse(BaseModel):
+
+class MinecraftResponse(ToI18nParamsModel):
     latency: float
 
     def __str__(self):
         return f"{Emoji.OK} {Emoji.LATENCY}{self.latency}ms"
 
+    def get_i18n_params(self) -> dict[str, Any]:
+        return {
+            "latency": self.latency
+        }
 
-class MinecraftDetails(BaseModel):
+
+class MinecraftDetails(ToI18nParamsModel):
     version: str
     protocol: int
     max_players: int
@@ -109,15 +144,29 @@ class MinecraftDetails(BaseModel):
             message += f"\n{Emoji.OK} Порт: {self.port}"
         return message
 
+    def get_i18n_params(self) -> dict[str, Any]:
+        return {
+            "version": self.version,
+            "protocol": self.protocol,
+            "online": self.online,
+            "max_players": self.max_players,
+            "port": self.port if self.port else 0
+        }
 
-class PortResponse(BaseModel):
+
+class PortResponse(ToI18nParamsModel):
     open: bool
 
     def __str__(self):
         return f"{Emoji.OK if self.open else Emoji.ERR}"
 
+    def get_i18n_params(self) -> dict[str, Any]:
+        return {
+            "open": f"{Emoji.OK if self.open else Emoji.ERR}"
+        }
 
-class PortDetails(BaseModel):
+
+class PortDetails(ToI18nParamsModel):
     service: str
 
     def __str__(self):
@@ -126,12 +175,23 @@ class PortDetails(BaseModel):
         else:
             return f"{Emoji.SHRUG} На этом порту неизвестный сервис"
 
+    def get_i18n_params(self) -> dict[str, Any]:
+        return {
+            "service": self.service,
+            "available": 1 if self.service else 0
+        }
 
-class SourceServerResponse(BaseModel):
+
+class SourceServerResponse(ToI18nParamsModel):
     ping: float
 
     def __str__(self):
         return f"{Emoji.OK} {Emoji.LATENCY} {round(self.ping * 1000)}ms"
+
+    def get_i18n_params(self) -> dict[str, Any]:
+        return {
+            "ping": round(self.ping * 1000)
+        }
 
 
 class SourceServerPlayer(BaseModel):
@@ -140,7 +200,7 @@ class SourceServerPlayer(BaseModel):
     duration: float
 
 
-class SourceServerDetails(BaseModel):
+class SourceServerDetails(ToI18nParamsModel):
     protocol: int
     server_name: str
     map_name: str
@@ -161,8 +221,21 @@ class SourceServerDetails(BaseModel):
                f"{Emoji.PEOPLE} Игроки: {self.player_count}/{self.max_players}\n" \
                f"{Emoji.COMPUTER} Версия: {self.version}\n" \
                f"{Emoji.SHIELD} {'Сервер защищен VAC' if self.vac_enabled else 'Сервер без VAC'}\n" \
-               f"{Emoji.KEY} {'Сервер защищен паролем' if self.vac_enabled else 'Сервер без пароля'}\n" \
-               f"{Emoji.INFO} STEAM ID: {self.steam_id}\n" \
+               f"{Emoji.KEY} {'Сервер защищен паролем' if self.password_protected else 'Сервер без пароля'}\n" \
+               f"{Emoji.INFO} STEAM ID: {self.steam_id}\n"
+
+    def get_i18n_params(self) -> dict[str, Any]:
+        return {
+            "server_name": self.server_name,
+            "game": self.game,
+            "map_name": self.map_name,
+            "player_count": self.player_count,
+            "max_players": self.max_players,
+            "version": self.version,
+            "vac_enabled": 1 if self.vac_enabled else 0,
+            "password_protected": 1 if self.password_protected else 0,
+            "steam_id": self.steam_id
+        }
 
 
 # SPT Aki
@@ -180,17 +253,44 @@ class SPTMod(BaseModel):
     author: str
     license: str
 
+    def __str__(self) -> str:
+        return f"- {self.name}: {self.version}"
 
-class SPTServerResponse(BaseModel):
+
+class SPTServerResponse(ToI18nParamsModel):
     aki_version: str
     game_version: str
     config: SPTConfig
     mods: list[SPTMod]
 
+    def get_formatted_mods(self) -> str:
+        return "\n".join(str(self.mods))
+
+    def __str__(self):
+        return (
+            f"{Emoji.COMPUTER} Сервер {self.config.name}"
+            f"{Emoji.COMPUTER} Версия AKI: {self.aki_version}\n"
+            f"{Emoji.GAME} Версия игры: {self.game_version}\n\n"
+            
+            f"{Emoji.INFO} Моды:\n"
+            f"{self.get_formatted_mods}"
+        )
+
+    def get_i18n_params(self) -> dict[str, Any]:
+        return {
+            "name": self.config.name,
+            "aki_version": self.aki_version,
+            "game_version": self.game_version,
+            "formatted_mods": self.get_formatted_mods
+        }
+
 
 class VSMod(BaseModel):
     id: str
     version: str
+
+    def __str__(self):
+        return f"- {self.id}: {self.version}"
 
 
 class VSPlayStyle(BaseModel):
@@ -198,7 +298,7 @@ class VSPlayStyle(BaseModel):
     lang_code: str = Field(alias="langCode")
 
 
-class VSServer(BaseModel):
+class VSServer(ToI18nParamsModel):
     server_name: str = Field(alias="serverName")
     server_ip: str = Field(alias="serverIP")
     mods: list[VSMod]
@@ -206,8 +306,28 @@ class VSServer(BaseModel):
     players: int
     game_version: str = Field(alias="gameVersion")
     has_password: bool = Field(alias="hasPassword")
-    whitelisted: str = Field(alias="whitelisted")
+    whitelisted: bool = Field(alias="whitelisted")
     game_description: str = Field(alias="gameDescription")
+
+    def __str__(self):
+        return f"{Emoji.OK} <b>{html.escape(self.server_name)}</b>\n" \
+               f"{Emoji.GAME} IP: {self.server_ip}\n" \
+               f"{Emoji.PEOPLE} Игроки: {self.players}/{self.max_players}\n" \
+               f"{Emoji.COMPUTER} Версия: {self.game_version}\n" \
+               f"{Emoji.SHIELD} {'Белый список включён' if self.whitelisted else 'Белый список выключен'}\n" \
+               f"{Emoji.KEY} {'Сервер защищен паролем' if self.has_password else 'Сервер без пароля'}\n" \
+
+
+    def get_i18n_params(self) -> dict[str, Any]:
+        return {
+            "server_name": self.server_name,
+            "server_ip": self.server_ip,
+            "players": self.players,
+            "max_players": self.max_players,
+            "version": self.version,
+            "whitelisted": 1 if self.whitelisted else 0,
+            "has_password": 1 if self.has_password else 0,
+        }
 
 
 class Response(BaseModel, Generic[Payload]):
@@ -241,4 +361,5 @@ COUNTRY_EMOJI = {
     "georgia": "🇬🇪",
     "lithuania": "🇱🇹",
     "sweden": "🇸🇪",
+    "poland": "🇵🇱"
 }

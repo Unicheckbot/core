@@ -1,8 +1,8 @@
 [tool.poetry]
 name = "core"
-version = "1.0.0"
+version = "1.1.0"
 description = ""
-authors = ["kiriharu <kiriharu@yandex.ru>"]
+authors = ["kiriharu <me@kiriha.ru>"]
 
 [tool.poetry.dependencies]
 python = "^3.9"
