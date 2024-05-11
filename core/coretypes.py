@@ -257,7 +257,19 @@ class SPTMod(BaseModel):
         return f"- {self.name}: {self.version}"
 
 
-class SPTServerResponse(ToI18nParamsModel):
+class SPTResponse(ToI18nParamsModel):
+    ok: bool = True
+
+    def __str__(self):
+        return f"{Emoji.OK} Сервер доступен"
+
+    def get_i18n_params(self) -> dict[str, Any]:
+        return {
+            "ok": 1
+        }
+
+
+class SPTDetails(ToI18nParamsModel):
     aki_version: str
     game_version: str
     config: SPTConfig
@@ -284,6 +296,20 @@ class SPTServerResponse(ToI18nParamsModel):
             "formatted_mods": self.get_formatted_mods
         }
 
+# Vintage Story
+
+
+class VintageStoryResponse(ToI18nParamsModel):
+    ok: bool = True
+
+    def __str__(self):
+        return f"{Emoji.OK} Сервер доступен"
+
+    def get_i18n_params(self) -> dict[str, Any]:
+        return {
+            "ok": 1
+        }
+
 
 class VSMod(BaseModel):
     id: str
@@ -298,7 +324,7 @@ class VSPlayStyle(BaseModel):
     lang_code: str = Field(alias="langCode")
 
 
-class VSServer(ToI18nParamsModel):
+class VintageStoryDetails(ToI18nParamsModel):
     server_name: str = Field(alias="serverName")
     server_ip: str = Field(alias="serverIP")
     mods: list[VSMod]
