@@ -2,7 +2,7 @@ import html
 from enum import Enum, IntEnum
 from typing import TypeVar, Generic, List, Optional, Dict, Any
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, AliasChoices
 
 Payload = TypeVar('Payload')
 Details = TypeVar('Details')
@@ -242,7 +242,7 @@ class SourceServerDetails(ToI18nParamsModel):
 
 
 class SPTConfig(BaseModel):
-    backend_url: str = Field(alias="backendUrl")
+    backend_url: str = Field(validation_alias=AliasChoices("backendUrl", "backend_url"))
     name: str
     editions: list[str]
 
@@ -325,24 +325,17 @@ class VSPlayStyle(BaseModel):
 
 
 class VintageStoryDetails(ToI18nParamsModel):
-    server_name: str = Field(alias="serverName")
-    server_ip: str = Field(alias="serverIP")
+    server_name: str = Field(validation_alias=AliasChoices("serverName", "server_name"))
+    server_ip: str = Field(validation_alias=AliasChoices("serverIP", "server_ip"))
     mods: list[VSMod]
-    max_players: int = Field(alias="maxPlayers")
+    max_players: int = Field(validation_alias=AliasChoices("maxPlayers", "max_players"))
     players: int
-    game_version: str = Field(alias="gameVersion")
-    has_password: bool = Field(alias="hasPassword")
-    whitelisted: bool = Field(alias="whitelisted")
-    game_description: str = Field(alias="gameDescription")
-
-    def __str__(self):
-        return f"{Emoji.OK} <b>{html.escape(self.server_name)}</b>\n" \
-               f"{Emoji.GAME} IP: {self.server_ip}\n" \
-               f"{Emoji.PEOPLE} Игроки: {self.players}/{self.max_players}\n" \
-               f"{Emoji.COMPUTER} Версия: {self.game_version}\n" \
-               f"{Emoji.SHIELD} {'Белый список включён' if self.whitelisted else 'Белый список выключен'}\n" \
-               f"{Emoji.KEY} {'Сервер защищен паролем' if self.has_password else 'Сервер без пароля'}\n" \
-
+    game_version: str = Field(validation_alias=AliasChoices("gameVersion", "game_version"))
+    has_password: bool = Field(validation_alias=AliasChoices("hasPassword", "has_password"))
+    whitelisted: bool
+    game_description: str = Field(
+        validation_alias=AliasChoices("gameDescription", "game_description")
+    )
 
     def get_i18n_params(self) -> dict[str, Any]:
         return {
@@ -350,7 +343,7 @@ class VintageStoryDetails(ToI18nParamsModel):
             "server_ip": self.server_ip,
             "players": self.players,
             "max_players": self.max_players,
-            "version": self.version,
+            "version": self.game_version,
             "whitelisted": 1 if self.whitelisted else 0,
             "has_password": 1 if self.has_password else 0,
         }
