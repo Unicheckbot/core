@@ -381,5 +381,6 @@ COUNTRY_EMOJI = {
     "lithuania": "🇱🇹",
     "sweden": "🇸🇪",
     "poland": "🇵🇱",
-    "bulgaria": "🇧🇬"
+    "bulgaria": "🇧🇬",
+    "moldova": "🇲🇩"
 }
